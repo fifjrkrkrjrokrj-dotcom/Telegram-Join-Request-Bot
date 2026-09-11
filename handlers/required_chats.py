@@ -59,10 +59,16 @@ async def cb_prompt_add_required_chat(client: Client, callback_query: CallbackQu
         "<i>Note: If the required channel is private, ensure this bot is an Admin there to check user memberships!</i>"
     )
     text = format_card("➕ ADD REQUIRED CHAT", content)
-    await callback_query.message.reply_text(
-        text="👇 <i>Pick a channel using the keyboard below or forward a post:</i>",
-        reply_markup=get_select_chat_reply_keyboard()
-    )
+    reply_kb = get_select_chat_reply_keyboard()
+    if reply_kb:
+        try:
+            await callback_query.message.reply_text(
+                text="👇 <i>Pick a channel using the keyboard below or forward a post:</i>",
+                reply_markup=reply_kb
+            )
+        except Exception as e:
+            logger.warning(f"Could not send native reply keyboard: {e}")
+
     await callback_query.message.edit_text(
         text=text,
         reply_markup=InlineKeyboardMarkup([

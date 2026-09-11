@@ -1,40 +1,52 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     ReplyKeyboardMarkup,
     KeyboardButton,
-    KeyboardButtonRequestChat,
     ReplyKeyboardRemove
 )
 
-def get_select_chat_reply_keyboard() -> ReplyKeyboardMarkup:
+try:
+    from pyrogram.types import KeyboardButtonRequestChat
+except ImportError:
+    try:
+        from pyrogram.types import KeyboardButtonRequestPeer as KeyboardButtonRequestChat
+    except ImportError:
+        KeyboardButtonRequestChat = None
+
+def get_select_chat_reply_keyboard() -> Optional[ReplyKeyboardMarkup]:
     """Native Telegram reply keyboard for 1-tap channel or group selection."""
-    return ReplyKeyboardMarkup(
-        [
+    if not KeyboardButtonRequestChat:
+        return None
+    try:
+        return ReplyKeyboardMarkup(
             [
-                KeyboardButton(
-                    "📢 1-Tap Select Channel",
-                    request_chat=KeyboardButtonRequestChat(
-                        button_id=1,
-                        chat_is_channel=True,
-                        bot_is_member=True
+                [
+                    KeyboardButton(
+                        "📢 1-Tap Select Channel",
+                        request_chat=KeyboardButtonRequestChat(
+                            button_id=1,
+                            chat_is_channel=True,
+                            bot_is_member=True
+                        )
+                    ),
+                    KeyboardButton(
+                        "👥 1-Tap Select Group",
+                        request_chat=KeyboardButtonRequestChat(
+                            button_id=2,
+                            chat_is_channel=False,
+                            bot_is_member=True
+                        )
                     )
-                ),
-                KeyboardButton(
-                    "👥 1-Tap Select Group",
-                    request_chat=KeyboardButtonRequestChat(
-                        button_id=2,
-                        chat_is_channel=False,
-                        bot_is_member=True
-                    )
-                )
+                ],
+                [KeyboardButton("❌ Cancel")]
             ],
-            [KeyboardButton("❌ Cancel")]
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+    except Exception:
+        return None
 
 def get_chats_list_keyboard(chats: List[Dict[str, Any]], page: int = 1, per_page: int = 5) -> InlineKeyboardMarkup:
     """List connected chats with pagination."""

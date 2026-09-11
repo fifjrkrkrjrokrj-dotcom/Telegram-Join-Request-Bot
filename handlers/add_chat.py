@@ -29,10 +29,16 @@ async def cb_add_chat_prompt(client: Client, callback_query: CallbackQuery):
     )
 
     text = format_card("➕ ADD GROUP / CHANNEL", content)
-    await callback_query.message.reply_text(
-        text="👇 <i>Select a channel or forward a message:</i>",
-        reply_markup=get_select_chat_reply_keyboard()
-    )
+    reply_kb = get_select_chat_reply_keyboard()
+    if reply_kb:
+        try:
+            await callback_query.message.reply_text(
+                text="👇 <i>Select a channel or forward a message:</i>",
+                reply_markup=reply_kb
+            )
+        except Exception as e:
+            logger.warning(f"Could not send native reply keyboard: {e}")
+
     await callback_query.message.edit_text(
         text=text,
         reply_markup=get_cancel_keyboard("menu:dashboard")

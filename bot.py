@@ -72,9 +72,15 @@ async def main():
     finally:
         logger.info("Initiating graceful shutdown...")
         cleanup_task.cancel()
-        if app.is_connected:
-            await app.stop()
-        await db.close()
+        try:
+            if hasattr(app, "is_connected") and app.is_connected:
+                await app.stop()
+        except Exception as e:
+            logger.debug(f"Exception during app.stop(): {e}")
+        try:
+            await db.close()
+        except Exception as e:
+            logger.debug(f"Exception during db.close(): {e}")
         logger.info("Shutdown complete.")
 
 if __name__ == "__main__":
