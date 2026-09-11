@@ -1,0 +1,17 @@
+# Core Telegram Framework
+pyrofork>=2.3.37
+tgcrypto>=1.2.5
+
+# Database & Async Engine
+motor>=3.3.2
+pymongo>=4.6.1
+
+# Configuration & Utilities
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+aiohttp>=3.9.1
+aiofiles>=23.2.1
+
+# Formatting & Logging
+colorlog>=6.8.0

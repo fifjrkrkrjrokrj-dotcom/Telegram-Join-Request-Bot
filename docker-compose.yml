@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: verify_bot_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - bot_network
+
+  bot:
+    build: .
+    container_name: verify_bot_app
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+    networks:
+      - bot_network
+
+volumes:
+  mongo_data:
+
+networks:
+  bot_network:
+    driver: bridge
