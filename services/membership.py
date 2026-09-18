@@ -49,6 +49,12 @@ class MembershipService:
             title = req["title"]
             button_text = req.get("button_text") or f"📢 Join {title}"
             invite_link = req.get("invite_link") or (f"https://t.me/{req['username']}" if req.get("username") else None)
+            chat_type = req.get("type", "channel")
+
+            # Bot promotional start links cannot be verified for membership
+            if str(chat_type).lower() == "bot":
+                joined_count += 1
+                continue
 
             is_member, status_reason = await self._check_single_chat_membership(
                 client=client,
@@ -64,7 +70,7 @@ class MembershipService:
                     "title": title,
                     "button_text": button_text,
                     "invite_link": invite_link,
-                    "type": req.get("type", "channel"),
+                    "type": chat_type,
                     "status_reason": status_reason
                 })
 
