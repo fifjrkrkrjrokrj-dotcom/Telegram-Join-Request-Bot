@@ -55,5 +55,10 @@ class UserRepository:
         """Return total registered bot users."""
         return await self.collection.count_documents({})
 
+    async def get_all_users(self):
+        """Yield all user documents for background tasks like broadcasting."""
+        cursor = self.collection.find({})
+        async for document in cursor:
+            yield document
 
 user_repo = UserRepository()
